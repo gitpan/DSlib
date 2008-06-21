@@ -1,0 +1,6 @@
+name	operators	sum	symbols
+Binary combinatory logic	2	4	2
+Brainfuck	8	16	8
+Iota and Jot	2	4	2
+OISC	1	12	11+
+Thue	1	129	128+

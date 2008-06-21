@@ -1,0 +1,7 @@
+# Test file containing tabular data
+name	operators	symbols
+Binary combinatory logic	2	2
+Brainfuck	8	8
+Iota and Jot	2	2
+OISC	1	11+
+Thue	1	128+
