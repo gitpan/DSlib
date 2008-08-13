@@ -20,7 +20,7 @@ use Carp;
 use Carp::Assert;
 
 our ($VERSION) = $DS::VERSION;
-our ($REVISION) = '$Revision: 1.1 $' =~ /(\d+\.\d+)/;
+our ($REVISION) = '$Revision: 1.2 $' =~ /(\d+\.\d+)/;
 our ($STATE) = '$State: Exp $' =~ /:\s+(.+\S)\s+\$$/;
 
 
@@ -94,3 +94,60 @@ sub out_type {
 }
 
 1;
+
+__END__
+=pod
+
+=head1 NAME
+
+DS::Source - component that is the source of rows
+
+=head1 DESCRIPTION
+
+This class is the source of rows. It can be bound to any C<DS::Target>,
+which will receive rows from it. Unless you are into writing complicated
+classes, you will probably never need to inherit directly from this class.
+
+If you need to write a class that retrieves data from outside a chain and
+passes it on as rows, please take a look at C<DS::Importer>.
+
+=head1 SUPER CLASSES
+
+None.
+
+=head1 METHODS
+
+=head2 new( $class, $out_type, $target )
+
+Constructor. Instantiates an object of class C<$class>, returning the type 
+C<$out_type>, attaced to the target C<$target>. Besides C<$class>,
+any of the parameters can be left out.
+
+=head2 attach_target( $target )
+
+Attaches target C<$target> to this object. This method also triggers
+type checking, ensuring that the outgoing type of this object is
+sufficient for C<$target>. If the type check fails, an exception
+is thrown.
+
+=head2 target( $target )
+
+This is a method mostly for internal use. It will get or set the
+target, bypassing type checks.
+
+=head2 pass_row( $row )
+
+Calling this metod will cause the transformer to pass C<$row> to the target
+C<$target>.
+
+=head2 out_type( $type )
+
+This is an accessor that gets or sets the outgoing type of this object.
+
+=head1 SEE ALSO
+
+L<DS::Importer>, L<DS::Transformer>, L<DS::Target>.
+
+=head1 AUTHOR
+
+Written by Michael Zedeler.

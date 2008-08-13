@@ -20,7 +20,7 @@ use Carp qw{ croak cluck confess carp };
 use Carp::Assert;
 
 our ($VERSION) = $DS::VERSION;
-our ($REVISION) = '$Revision: 1.1 $' =~ /(\d+\.\d+)/;
+our ($REVISION) = '$Revision: 1.2 $' =~ /(\d+\.\d+)/;
 
 
 sub new {
@@ -116,3 +116,63 @@ sub in_type {
 }
 
 1;
+
+__END__
+=pod
+
+=head1 NAME
+
+DS::Target - target of rows.
+
+=head1 DESCRIPTION
+
+This class is the target of rows. It can be bound to any C<DS::Source>,
+which will send rows to it. Unless you are into writing complicated
+classes, you will probably never need to inherit directly from this class.
+
+=head1 SUPER CLASSES
+
+None.
+
+=head1 METHODS
+
+=head2 new( $class, $in_type, $source )
+
+Constructor. Instantiates an object of class C<$class>, taking the type 
+C<$in_type>, attached to the source C<$source>. Besides C<$class>, any of the
+parameters can be left out.
+
+=head2 receive_row( $row )
+
+Triggers processing of C<$row>. This method calls C<process> with
+C<$row>, and then passes the result to C<pass_row>.
+
+=head2 attach_source( $source )
+
+Attaches C<$source> as source. This method also validates data types
+by calling C<validate_source_type>, throwing an exception if the 
+validation fails.
+
+=head2 source( $source )
+
+Accessor for source. This method sets the source of this object and 
+triggers type checking.
+
+=head2 validate_source_type( $source_type )
+
+Validates source type. If the C<$source_type> is not valid, it returns
+false, true otherwise. By default, this method ensures that the ingoing 
+type of this object contains no fields not specified in C<$source_type>.
+Override if you need more complex checking.
+
+=head2 in_type( $type )
+
+Accessor for ingoing type.
+
+=head1 SEE ALSO
+
+L<DS::Transformer>, L<DS::Source>.
+
+=head1 AUTHOR
+
+Written by Michael Zedeler.

@@ -23,7 +23,7 @@ use List::MoreUtils qw{ any all };
 use DS::TypeSpec::Field;
 
 our ($VERSION) = $DS::VERSION;
-our ($REVISION) = '$Revision: 1.1 $' =~ /(\d+\.\d+)/;
+our ($REVISION) = '$Revision: 1.2 $' =~ /(\d+\.\d+)/;
 
 
 sub new {
@@ -215,105 +215,3 @@ sub project {
 1;
 
 #TODO Add sorting and unique constraints. Possibly also field order (or maybe not?!?)
-
-__END__
-    assert($name !~ /\s/);
-
-    my @pks = ();
-    my %pk_lookup = ();
-    my @fields = ();
-    my %field_lookup = ();
-
-    if(ref($fields) eq 'HASH') {
-        foreach my $field (keys %$fields) {
-            push @fields, $field;
-            $field_lookup{$field} = 1;
-            if( $$fields{$field} ) {
-                push @pks, $field if $fields->{$field};
-                $pk_lookup{$field} = 1 if $fields->{$field};
-            }
-        }
-    } else {
-        assert($fields ne "");
-    
-        foreach my $field_line ( split /\n/, $fields ) {
-
-            next if $field_line =~ /^\s*#/;
-            
-            my( $field, $is_pk ) = $field_line =~ /\s*(\S+)(?:\s+(\S+))?/;     
-    
-            push @fields, $field;
-            $field_lookup{$field} = 1;
-            if(defined($is_pk) and $is_pk == 1 ) {
-                push @pks, $field;
-                $pk_lookup{$field} = 1;
-            }
-        }
-    }
-
-    $self->set(name => $name);
-    $self->set(fields => [@fields]);
-    $self->set(field_lookup => {%field_lookup});
-    $self->set(pks => [@pks]);
-    $self->set(pk_lookup => {%pk_lookup});
-    
-    return $self;
-}
-
-
-sub set($$$) {
-    my($self, $key, $value) = @_;
-    
-    $self->{$key} = $value;
-}
-
-
-sub get($$) {
-    my($self, $key) = @_;
-
-    return $self->{$key};
-}
-
-sub project {
-    my($self, $name, $fields) = @_;
-    
-    if( ref( $fields ) eq 'ARRAY' ) {
-        my $new_fields = {};
-        foreach my $field ( @$fields ) {
-            $new_fields->{$field} = 1;
-        }
-        $fields = $new_fields;
-    }
-    assert(ref($fields) eq 'HASH');
-    
-    my $new_fields = {};
-    # First check that the projection doesn't require fields we do not already have
-    foreach my $field (keys %$fields) {
-        # Can't include fields that are not already there
-        die "Can't limit to field $field since it is not in the original type" unless exists($self->{field_lookup}->{$field});
-    }
-    #TODO Ugly bug here: unable to indicate field order in constructor since it takes a hash (keys has no stable order)
-    foreach my $field (@{$self->{fields}}) {
-        $new_fields->{$field} = defined($self->{pk_lookup}->{$field}) ? 1 : 0;
-    }
-
-    return new DS::TypeSpec($name, $new_fields);
-}
-
-sub contains {
-    my($self, $other) = @_;
-    
-    assert($other->isa('DS::TypeSpec'));
-
-    my $result = 1;
-    foreach my $other_field (@{$other->{fields}}) {
-        unless( $self->{field_lookup}->{$other_field} ) {
-            $result = 0;
-            last;
-        }
-    }
-    
-    return $result;
-}
-
-1;

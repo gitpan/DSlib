@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use ExtUtils::MakeMaker;
 
-our ($VERSION) = '$Revision: 1.1 $' =~ /(\d+\.\d+)/;
+our ($VERSION) = '$Revision: 1.2 $' =~ /(\d+\.\d+)/;
 
 
 WriteMakefile(
@@ -14,6 +14,7 @@ WriteMakefile(
     PREREQ_PM    => {
                         'Carp::Assert'      => '0.20',
                         'IO::File'          => '1.11',
-                        'List::MoreUtils'   => '0.21'
+                        'List::MoreUtils'   => '0.21',
+                        'Clone'             => '0.28'
     }
 );

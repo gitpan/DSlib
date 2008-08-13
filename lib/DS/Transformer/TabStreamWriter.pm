@@ -24,7 +24,7 @@ use Carp;
 use Carp::Assert;
 
 our ($VERSION) = $DS::VERSION;
-our ($REVISION) = '$Revision: 1.1 $' =~ /(\d+\.\d+)/;
+our ($REVISION) = '$Revision: 1.2 $' =~ /(\d+\.\d+)/;
 
 sub new {
     my( $class, $fh, $field_order, $source, $target ) = @_;
@@ -53,10 +53,26 @@ sub receive_row {
     return $self->SUPER::receive_row( $row );
 }
 
+sub include_header {
+    my( $self ) = @_;
+    $self->{include_header} = 1;
+    return;
+}
+
+sub exclude_header {
+    my( $self ) = @_;
+    $self->{include_header} = 0;
+    return;
+}
+
 sub process {
     my( $self, $row) = @_;
 
     if( $row ) {
+        if( $self->{include_header} and not $self->{header_included} ) {
+            $self->write_header;
+            $self->{header_included} = 1;
+        }
         $self->{fh}->print(join("\t", @$row{@{$self->{field_order}}}), "\r\n");
     }
 
